@@ -1,203 +1,254 @@
 <div align="center">
 
-<img src="./static/image/MiroFish_logo_compressed.jpeg" alt="MiroFish Logo" width="75%"/>
+<img src="./static/image/MiroFish_logo_compressed.jpeg" alt="MiroFish Logo" width="70%"/>
 
-<a href="https://trendshift.io/repositories/16144" target="_blank"><img src="https://trendshift.io/api/badge/repositories/16144" alt="666ghj%2FMiroFish | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+# MiroFish — Optimized
 
-简洁通用的群体智能引擎，预测万物
-</br>
-<em>A Simple and Universal Swarm Intelligence Engine, Predicting Anything</em>
+**Versão aprimorada do [MiroFish](https://github.com/666ghj/MiroFish) com busca vetorial local, embeddings Google Gemini e armazenamento colunar em DuckDB.**
 
-<a href="https://www.shanda.com/" target="_blank"><img src="./static/image/shanda_logo.png" alt="666ghj%2FMiroFish | Shanda" height="40"/></a>
+[![Based on](https://img.shields.io/badge/based%20on-666ghj%2FMiroFish-blue?style=flat-square&logo=github)](https://github.com/666ghj/MiroFish)
+[![License](https://img.shields.io/github/license/666ghj/MiroFish?style=flat-square)](./LICENSE)
+[![Python](https://img.shields.io/badge/python-≥3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![Node](https://img.shields.io/badge/node-18+-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
 
-[![GitHub Stars](https://img.shields.io/github/stars/666ghj/MiroFish?style=flat-square&color=DAA520)](https://github.com/666ghj/MiroFish/stargazers)
-[![GitHub Watchers](https://img.shields.io/github/watchers/666ghj/MiroFish?style=flat-square)](https://github.com/666ghj/MiroFish/watchers)
-[![GitHub Forks](https://img.shields.io/github/forks/666ghj/MiroFish?style=flat-square)](https://github.com/666ghj/MiroFish/network)
-[![Docker](https://img.shields.io/badge/Docker-Build-2496ED?style=flat-square&logo=docker&logoColor=white)](https://hub.docker.com/)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/666ghj/MiroFish)
-
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=flat-square&logo=discord&logoColor=white)](http://discord.gg/ePf5aPaHnA)
-[![X](https://img.shields.io/badge/X-Follow-000000?style=flat-square&logo=x&logoColor=white)](https://x.com/mirofish_ai)
-[![Instagram](https://img.shields.io/badge/Instagram-Follow-E4405F?style=flat-square&logo=instagram&logoColor=white)](https://www.instagram.com/mirofish_ai/)
-
-[English](./README.md) | [中文文档](./README-ZH.md)
+[English](#english) | [Português](#português)
 
 </div>
 
-## ⚡ Overview
+---
 
-**MiroFish** is a next-generation AI prediction engine powered by multi-agent technology. By extracting seed information from the real world (such as breaking news, policy drafts, or financial signals), it automatically constructs a high-fidelity parallel digital world. Within this space, thousands of intelligent agents with independent personalities, long-term memory, and behavioral logic freely interact and undergo social evolution. You can inject variables dynamically from a "God's-eye view" to precisely deduce future trajectories — **rehearse the future in a digital sandbox, and win decisions after countless simulations**.
+## Português
 
-> You only need to: Upload seed materials (data analysis reports or interesting novel stories) and describe your prediction requirements in natural language</br>
-> MiroFish will return: A detailed prediction report and a deeply interactive high-fidelity digital world
+> **Aviso de atribuição:** Este repositório é um fork aprimorado do projeto original **[666ghj/MiroFish](https://github.com/666ghj/MiroFish)**, desenvolvido pela equipe Shanda Group. Todo o crédito pela arquitetura e ideia original pertence aos autores do projeto base. As modificações aqui presentes visam expandir sua capacidade e acessibilidade.
 
-### Our Vision
+### ⚡ O que é o MiroFish?
 
-MiroFish is dedicated to creating a swarm intelligence mirror that maps reality. By capturing the collective emergence triggered by individual interactions, we break through the limitations of traditional prediction:
+**MiroFish** é um motor de simulação e predição baseado em múltiplos agentes de IA. A partir de materiais-semente (notícias, relatórios, histórias), ele constrói um mundo digital paralelo de alta fidelidade onde milhares de agentes com memória, personalidade e lógica comportamental interagem livremente — permitindo que você simule e preveja eventos futuros como em um sandbox.
 
-- **At the Macro Level**: We are a rehearsal laboratory for decision-makers, allowing policies and public relations to be tested at zero risk
-- **At the Micro Level**: We are a creative sandbox for individual users — whether deducing novel endings or exploring imaginative scenarios, everything can be fun, playful, and accessible
+> Você fornece: materiais-semente e um objetivo de predição.  
+> O MiroFish retorna: um relatório detalhado e um mundo digital interativo.
 
-From serious predictions to playful simulations, we let every "what if" see its outcome, making it possible to predict anything.
+---
 
-## 🌐 Live Demo
+### 🚀 O que foi melhorado neste fork?
 
-Welcome to visit our online demo environment and experience a prediction simulation on trending public opinion events we've prepared for you: [mirofish-live-demo](https://666ghj.github.io/mirofish-demo/)
+Este fork foca em tornar o MiroFish **mais robusto, rápido e barato de operar**, especialmente para usuários sem infraestrutura de banco de dados dedicada (Memgraph, Zep).
 
-## 📸 Screenshots
+#### 1. 🔍 Busca Vetorial Local (DuckDB + NumPy)
+O sistema original dependia exclusivamente do **Memgraph** para busca por similaridade vetorial. Este fork adiciona uma camada de busca vetorial puramente local usando **DuckDB** e **NumPy**, com similaridade de cosseno:
 
-<div align="center">
-<table>
-<tr>
-<td><img src="./static/image/Screenshot/运行截图1.png" alt="Screenshot 1" width="100%"/></td>
-<td><img src="./static/image/Screenshot/运行截图2.png" alt="Screenshot 2" width="100%"/></td>
-</tr>
-<tr>
-<td><img src="./static/image/Screenshot/运行截图3.png" alt="Screenshot 3" width="100%"/></td>
-<td><img src="./static/image/Screenshot/运行截图4.png" alt="Screenshot 4" width="100%"/></td>
-</tr>
-<tr>
-<td><img src="./static/image/Screenshot/运行截图5.png" alt="Screenshot 5" width="100%"/></td>
-<td><img src="./static/image/Screenshot/运行截图6.png" alt="Screenshot 6" width="100%"/></td>
-</tr>
-</table>
-</div>
-
-## 🎬 Demo Videos
-
-### 1. Wuhan University Public Opinion Simulation + MiroFish Project Introduction
-
-<div align="center">
-<a href="https://www.bilibili.com/video/BV1VYBsBHEMY/" target="_blank"><img src="./static/image/武大模拟演示封面.png" alt="MiroFish Demo Video" width="75%"/></a>
-
-Click the image to watch the complete demo video for prediction using BettaFish-generated "Wuhan University Public Opinion Report"
-</div>
-
-### 2. Dream of the Red Chamber Lost Ending Simulation
-
-<div align="center">
-<a href="https://www.bilibili.com/video/BV1cPk3BBExq" target="_blank"><img src="./static/image/红楼梦模拟推演封面.jpg" alt="MiroFish Demo Video" width="75%"/></a>
-
-Click the image to watch MiroFish's deep prediction of the lost ending based on hundreds of thousands of words from the first 80 chapters of "Dream of the Red Chamber"
-</div>
-
-> **Financial Prediction**, **Political News Prediction** and more examples coming soon...
-
-## 🔄 Workflow
-
-1. **Graph Building**: Seed extraction & Individual/collective memory injection & GraphRAG construction
-2. **Environment Setup**: Entity relationship extraction & Persona generation & Agent configuration injection
-3. **Simulation**: Dual-platform parallel simulation & Auto-parse prediction requirements & Dynamic temporal memory updates
-4. **Report Generation**: ReportAgent with rich toolset for deep interaction with post-simulation environment
-5. **Deep Interaction**: Chat with any agent in the simulated world & Interact with ReportAgent
-
-## 🚀 Quick Start
-
-### Option 1: Source Code Deployment (Recommended)
-
-#### Prerequisites
-
-| Tool | Version | Description | Check Installation |
-|------|---------|-------------|-------------------|
-| **Node.js** | 18+ | Frontend runtime, includes npm | `node -v` |
-| **Python** | ≥3.11, ≤3.12 | Backend runtime | `python --version` |
-| **uv** | Latest | Python package manager | `uv --version` |
-
-#### 1. Configure Environment Variables
-
-```bash
-# Copy the example configuration file
-cp .env.example .env
-
-# Edit the .env file and fill in the required API keys
+```
+Memgraph vector search (se disponível)
+    ↓ fallback
+Busca vetorial local DuckDB + NumPy (NOVA)
+    ↓ fallback
+Busca FTS/LIKE no DuckDB
 ```
 
-**Required Environment Variables:**
+- Embeddings são armazenados nos atributos dos nós e arestas do grafo
+- Funciona **sem Memgraph** instalado — ideal para desenvolvimento local
+- Sem custo adicional de infraestrutura
+
+#### 2. 🧠 Suporte a Google Gemini Embeddings
+
+Configuração dedicada para embeddings separada do LLM principal, com suporte nativo à **API Google AI (Gemini)**:
+
+| Variável | Descrição | Exemplo |
+|----------|-----------|---------|
+| `EMBEDDING_API_KEY` | Chave da API de embeddings | Chave do Google AI Studio |
+| `EMBEDDING_BASE_URL` | Endpoint da API | `https://generativelanguage.googleapis.com/v1beta/openai/` |
+| `EMBEDDING_MODEL_NAME` | Modelo de embedding | `text-embedding-004` |
+
+Isso permite usar **Gemini Embedding 2** (`text-embedding-004`) — um dos melhores embeddings disponíveis gratuitamente — para o grafo de conhecimento, enquanto usa outro modelo (ex.: Gemma, DeepSeek) para o LLM de simulação.
+
+#### 3. 💾 Armazenamento Colunar com DuckDB
+Substituição do armazenamento JSON por tabelas colunares **DuckDB**:
+- Queries indexadas e INSERT/UPDATE eficientes
+- Full-text search nativo
+- Migração automática de dados JSON existentes na primeira carga
+- Compatível com armazenamento em arquivo local (sem servidor)
+
+#### 4. 🤖 Dois LLMs: Simulação + Aceleração
+
+O sistema suporta dois modelos LLM configuráveis:
+
+| Papel | Variável | Uso |
+|-------|----------|-----|
+| **LLM Principal** | `LLM_*` | Simulação de agentes, geração de relatório |
+| **LLM de Aceleração** | `LLM_BOOST_*` | Tarefas rápidas (extração, classificação) |
+
+Isso permite usar um modelo mais lento e capaz para raciocínio complexo, e um modelo rápido e barato para tarefas de apoio — reduzindo custo e latência.
+
+#### 5. 🛡️ Tratamento de Falhas Robusto
+- Erros de embedding são logados como `WARNING` e não interrompem a operação
+- Todos os clientes externos (Memgraph, Zep, EmbeddingClient) têm fallback gracioso
+- Logs detalhados com `mirofish.*` logger hierárquico
+
+---
+
+### 🏗️ Arquitetura
+
+```
+Frontend (Next.js / Node 18+)
+    ↕ REST API
+Backend (Flask / Python ≥3.11)
+    ├── LLM Client (OpenAI-compatible: Gemini, DeepSeek, Qwen...)
+    ├── Embedding Client (Google Gemini / qualquer OpenAI-compat.)
+    ├── Local Graph Store
+    │   ├── DuckDB (armazenamento colunar + FTS)
+    │   ├── Busca vetorial local (NumPy cosine similarity)  ← NOVO
+    │   └── Memgraph mirroring (opcional)
+    ├── Zep Memory (opcional)
+    └── OASIS Simulation Engine
+```
+
+---
+
+### 🛠️ Instalação
+
+#### Pré-requisitos
+
+| Ferramenta | Versão | Verificação |
+|------------|--------|-------------|
+| Node.js | 18+ | `node -v` |
+| Python | ≥3.11, ≤3.12 | `python --version` |
+| uv | Mais recente | `uv --version` |
+
+#### 1. Clone o repositório
+
+```bash
+git clone https://github.com/GustavoDMentz/MiroFish-Optimized.git
+cd MiroFish-Optimized
+```
+
+#### 2. Configure as variáveis de ambiente
+
+```bash
+cp .env.example .env
+```
+
+Edite o `.env` com suas chaves:
 
 ```env
-# LLM API Configuration (supports any LLM API with OpenAI SDK format)
-# Recommended: Alibaba Qwen-plus model via Bailian Platform: https://bailian.console.aliyun.com/
-# High consumption, try simulations with fewer than 40 rounds first
-LLM_API_KEY=your_api_key
-LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-LLM_MODEL_NAME=qwen-plus
+# ===== LLM Principal (simulação de agentes) =====
+# Compatível com qualquer API no formato OpenAI: Gemini, DeepSeek, Qwen, etc.
+LLM_API_KEY=sua_chave_aqui
+LLM_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+LLM_MODEL_NAME=gemma-3-27b-it
 
-# Zep Cloud Configuration
-# Free monthly quota is sufficient for simple usage: https://app.getzep.com/
-ZEP_API_KEY=your_zep_api_key
+# ===== Embeddings (grafo de conhecimento) =====
+# Recomendado: Google Gemini Embedding 2 (gratuito e de alta qualidade)
+EMBEDDING_API_KEY=sua_chave_google_ai_studio
+EMBEDDING_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+EMBEDDING_MODEL_NAME=text-embedding-004
+
+# ===== LLM de Aceleração (opcional — tarefas rápidas) =====
+LLM_BOOST_API_KEY=sua_chave
+LLM_BOOST_BASE_URL=sua_url
+LLM_BOOST_MODEL_NAME=gemma-3-4b-it
+
+# ===== Memória Zep (opcional) =====
+# Gratuito para uso básico: https://app.getzep.com/
+ZEP_API_KEY=sua_chave_zep
+
+# ===== Memgraph (opcional — busca vetorial em grafo) =====
+# Deixe vazio para usar a busca vetorial local (DuckDB + NumPy)
+MEMGRAPH_HOST=
+MEMGRAPH_PORT=7687
 ```
 
-#### 2. Install Dependencies
+> **Dica:** Para começar sem custo, use o [Google AI Studio](https://aistudio.google.com/) para obter chaves gratuitas para Gemini e Gemma.
+
+#### 3. Instale as dependências
 
 ```bash
-# One-click installation of all dependencies (root + frontend + backend)
+# Instala tudo de uma vez (Node + Python)
 npm run setup:all
 ```
 
-Or install step by step:
+#### 4. Inicie os serviços
 
 ```bash
-# Install Node dependencies (root + frontend)
-npm run setup
-
-# Install Python dependencies (backend, auto-creates virtual environment)
-npm run setup:backend
-```
-
-#### 3. Start Services
-
-```bash
-# Start both frontend and backend (run from project root)
 npm run dev
 ```
 
-**Service URLs:**
-- Frontend: `http://localhost:3000`
-- Backend API: `http://localhost:5001`
+- **Frontend:** `http://localhost:3000`
+- **Backend API:** `http://localhost:5001`
 
-**Start Individually:**
-
-```bash
-npm run backend   # Start backend only
-npm run frontend  # Start frontend only
-```
-
-### Option 2: Docker Deployment
+#### Docker (alternativa)
 
 ```bash
-# 1. Configure environment variables (same as source deployment)
 cp .env.example .env
-
-# 2. Pull image and start
+# (edite o .env)
 docker compose up -d
 ```
 
-Reads `.env` from root directory by default, maps ports `3000 (frontend) / 5001 (backend)`
+---
 
-> Mirror address for faster pulling is provided as comments in `docker-compose.yml`, replace if needed.
+### 📋 Comparação com o projeto original
 
-## 📬 Join the Conversation
+| Funcionalidade | Original (666ghj/MiroFish) | Este fork |
+|----------------|---------------------------|-----------|
+| Armazenamento de grafo | JSON | DuckDB colunar |
+| Busca vetorial | Apenas Memgraph | Memgraph **+ local DuckDB/NumPy** |
+| Embeddings | Configuração única LLM | API de embeddings separada |
+| Suporte Google Gemini | Não nativo | ✅ Configuração dedicada |
+| Fallback sem Memgraph | ❌ | ✅ Busca local |
+| Dois LLMs (principal + boost) | ✅ | ✅ |
+| Tratamento de erros de embedding | Básico | Robusto (WARNING + continuação) |
 
-<div align="center">
-<img src="./static/image/QQ群.png" alt="QQ Group" width="60%"/>
-</div>
+---
 
-&nbsp;
+### 🤝 Contribuições
 
-The MiroFish team is recruiting full-time/internship positions. If you're interested in multi-agent simulation and LLM applications, feel free to send your resume to: **mirofish@shanda.com**
+Contribuições são bem-vindas! Para melhorias que também se aplicam ao projeto original, considere abrir um PR em [666ghj/MiroFish](https://github.com/666ghj/MiroFish).
 
-## 📄 Acknowledgments
+---
 
-**MiroFish has received strategic support and incubation from Shanda Group!**
+## English
 
-MiroFish's simulation engine is powered by **[OASIS (Open Agent Social Interaction Simulations)](https://github.com/camel-ai/oasis)**, We sincerely thank the CAMEL-AI team for their open-source contributions!
+> **Attribution notice:** This repository is an enhanced fork of **[666ghj/MiroFish](https://github.com/666ghj/MiroFish)**, originally developed by the Shanda Group team. All credit for the original architecture and concept belongs to the upstream authors. The modifications here aim to expand its capabilities and accessibility.
 
-## 📈 Project Statistics
+### ⚡ What is MiroFish?
 
-<a href="https://www.star-history.com/#666ghj/MiroFish&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=666ghj/MiroFish&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=666ghj/MiroFish&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=666ghj/MiroFish&type=date&legend=top-left" />
- </picture>
-</a>
+**MiroFish** is a multi-agent AI simulation and prediction engine. From seed materials (news, reports, stories), it builds a high-fidelity parallel digital world where thousands of agents with memory, personality, and behavioral logic interact freely — letting you simulate and predict future events in a digital sandbox.
+
+### 🚀 What's improved in this fork?
+
+#### 1. 🔍 Local Vector Search (DuckDB + NumPy)
+The original system relied exclusively on **Memgraph** for vector similarity search. This fork adds a purely local vector search layer using **DuckDB** and **NumPy** cosine similarity — no Memgraph required.
+
+#### 2. 🧠 Google Gemini Embeddings Support
+Dedicated embedding configuration, separate from the main LLM. Natively supports **Google AI API (Gemini)**, enabling use of **Gemini Embedding 2** (`text-embedding-004`) — one of the best freely available embedding models.
+
+#### 3. 💾 Columnar Storage with DuckDB
+JSON storage replaced with **DuckDB** columnar tables: indexed queries, efficient INSERT/UPDATE, native full-text search, automatic JSON migration on first load.
+
+#### 4. 🛡️ Robust Error Handling
+Embedding errors are logged as `WARNING` and don't interrupt operation. All external clients (Memgraph, Zep, EmbeddingClient) have graceful fallback.
+
+### 🛠️ Quick Start
+
+```bash
+git clone https://github.com/GustavoDMentz/MiroFish-Optimized.git
+cd MiroFish-Optimized
+cp .env.example .env
+# Edit .env with your API keys
+npm run setup:all
+npm run dev
+```
+
+- **Frontend:** `http://localhost:3000`
+- **Backend API:** `http://localhost:5001`
+
+---
+
+## 📄 License & Attribution
+
+This project is licensed under the same license as the original ([LICENSE](./LICENSE)).
+
+Original project: **[666ghj/MiroFish](https://github.com/666ghj/MiroFish)**  
+Original authors: [666ghj](https://github.com/666ghj) and the Shanda Group team  
+Simulation engine: **[OASIS](https://github.com/camel-ai/oasis)** by CAMEL-AI  
+
+Modifications in this fork by: [GustavoDMentz](https://github.com/GustavoDMentz)
