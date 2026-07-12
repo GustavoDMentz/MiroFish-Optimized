@@ -1161,13 +1161,14 @@ Return JSON format:
                 for a in selected_agents
             )
 
-        user_prompt = f"""Interview Requirement: {interview_requirement}
+        user_prompt_parts = [f"Interview Requirement: {interview_requirement}"]
+        if simulation_requirement:
+            user_prompt_parts.append(f"Simulation Background: {simulation_requirement}")
+        if agent_descriptions:
+            user_prompt_parts.append(f"Selected Agents:\n{agent_descriptions}")
+        user_prompt_parts.append("Generate 5 insightful interview questions that will produce meaningful responses from the agents.")
+        user_prompt = "\n\n".join(user_prompt_parts)
 
-{f"Simulation Background: {simulation_requirement}" if simulation_requirement else ""}
-
-{f"Selected Agents:\n{agent_descriptions}" if agent_descriptions else ""}
-
-Generate 5 insightful interview questions that will produce meaningful responses from the agents."""
 
         try:
             response = self.llm.chat_json(

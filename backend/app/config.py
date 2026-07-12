@@ -31,9 +31,24 @@ class Config:
     LLM_API_KEY = os.environ.get('LLM_API_KEY')
     LLM_BASE_URL = os.environ.get('LLM_BASE_URL', 'https://api.openai.com/v1')
     LLM_MODEL_NAME = os.environ.get('LLM_MODEL_NAME', 'gpt-4o-mini')
+    LLM_EMBEDDING_MODEL_NAME = os.environ.get('LLM_EMBEDDING_MODEL_NAME', 'text-embedding-004')
+
+    # Embeddings配置 (Com suporte a API separada/Google Gemini)
+    EMBEDDING_API_KEY = os.environ.get('EMBEDDING_API_KEY') or os.environ.get('LLM_API_KEY')
+    EMBEDDING_BASE_URL = os.environ.get('EMBEDDING_BASE_URL') or os.environ.get('LLM_BASE_URL', 'https://api.openai.com/v1')
+    EMBEDDING_MODEL_NAME = os.environ.get('EMBEDDING_MODEL_NAME') or os.environ.get('LLM_EMBEDDING_MODEL_NAME', 'text-embedding-004')
+
+
     
     # Zep配置
     ZEP_API_KEY = os.environ.get('ZEP_API_KEY')
+
+    # Memgraph配置
+    MEMGRAPH_HOST = os.environ.get('MEMGRAPH_HOST', '')
+    MEMGRAPH_PORT = int(os.environ.get('MEMGRAPH_PORT', 7687)) if os.environ.get('MEMGRAPH_PORT') else 7687
+    MEMGRAPH_USERNAME = os.environ.get('MEMGRAPH_USERNAME', '')
+    MEMGRAPH_PASSWORD = os.environ.get('MEMGRAPH_PASSWORD', '')
+
     
     # 文件上传配置
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB

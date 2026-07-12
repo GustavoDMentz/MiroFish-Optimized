@@ -479,6 +479,19 @@ class LocalGraphStore:
         attributes = attributes or {}
         conn = self._get_db(graph_id)
 
+        # Obter embedding
+        embedding = []
+        if self.embedding_client:
+            embedding_text = f"{name}: {summary}" if summary else name
+            try:
+                embedding = self.embedding_client.get_embedding(embedding_text)
+            except Exception as e:
+                import logging
+                logging.getLogger('mirofish.local_graph_store').warning(f"Erro ao obter embedding para {name}: {e}")
+
+        if embedding:
+            attributes["embedding"] = embedding
+
         # Tentar encontrar por nome
         existing = conn.execute(
             "SELECT uuid, labels, summary, attributes FROM nodes WHERE graph_id = ? AND LOWER(name) = LOWER(?)",
@@ -489,13 +502,16 @@ class LocalGraphStore:
             node_uuid = existing[0]
             merged_labels = list(set(existing[1] or []) | set(labels))
             merged_summary = summary if summary else (existing[2] or "")
-            merged_attrs = {**(json.loads(existing[3]) if isinstance(existing[3], str) else (existing[3] or {})),
-                           **attributes}
+            existing_attrs = json.loads(existing[3]) if isinstance(existing[3], str) else (existing[3] or {})
+            merged_attrs = {**existing_attrs, **attributes}
+            if embedding:
+                merged_attrs["embedding"] = embedding
             conn.execute("""
                 UPDATE nodes SET labels = ?, summary = ?, attributes = ?
                 WHERE uuid = ?
             """, [merged_labels, merged_summary,
                   json.dumps(merged_attrs, ensure_ascii=False), node_uuid])
+            attributes = merged_attrs
         else:
             node_uuid = uuid.uuid4().hex
             conn.execute("""
@@ -503,12 +519,6 @@ class LocalGraphStore:
             """, [node_uuid, graph_id, name, labels, summary,
                   json.dumps(attributes, ensure_ascii=False),
                   datetime.now().isoformat()])
-
-        # Memgraph mirroring
-        embedding = []
-        if self.embedding_client:
-            embedding_text = f"{name}: {summary}" if summary else name
-            embedding = self.embedding_client.get_embedding(embedding_text)
 
         sanitized_labels = ["".join(c for c in l if c.isalnum() or c == '_') or 'Entity' for l in labels]
         if 'Entity' not in sanitized_labels:
@@ -619,6 +629,22 @@ class LocalGraphStore:
         edge = dict(edge)
         edge["uuid"] = edge_uuid
         edge.setdefault("created_at", datetime.now().isoformat())
+
+        # Obter embedding
+        embedding = []
+        fact = edge.get("fact", "")
+        if fact and self.embedding_client:
+            try:
+                embedding = self.embedding_client.get_embedding(fact)
+            except Exception as e:
+                import logging
+                logging.getLogger('mirofish.local_graph_store').warning(f"Erro ao obter embedding para edge: {e}")
+
+        if embedding:
+            attrs = dict(edge.get("attributes", {}))
+            attrs["embedding"] = embedding
+            edge["attributes"] = attrs
+
         conn = self._get_db(graph_id)
         conn.execute("""
             INSERT INTO edges VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -636,10 +662,7 @@ class LocalGraphStore:
         ])
 
         # Memgraph mirroring
-        embedding = []
-        fact = edge.get("fact", "")
-        if fact and self.embedding_client:
-            embedding = self.embedding_client.get_embedding(fact)
+        # Reutiliza o embedding obtido anteriormente
 
         rel_name = edge.get("name") or "RELATED_TO"
         sanitized_rel = "".join(c if c.isalnum() or c == '_' else '_' for c in rel_name).upper() or "RELATED_TO"
@@ -687,17 +710,116 @@ class LocalGraphStore:
         limit: int = 10,
         scope: str = "edges",
     ) -> Dict[str, Any]:
-        """Busca híbrida: Memgraph vector → DuckDB FTS/LIKE fallback."""
+        """Busca híbrida: Memgraph vector → DuckDB local vector → DuckDB FTS/LIKE fallback."""
         # 1. Tentar Memgraph vector search
         if self.memgraph_connected and self.embedding_client:
-            q_emb = self.embedding_client.get_embedding(query)
-            if q_emb:
-                result_edges, result_nodes, facts = self._mg_vector_search(graph_id, q_emb, limit, scope)
-                if facts:
-                    return {"facts": facts, "edges": result_edges, "nodes": result_nodes}
+            try:
+                q_emb = self.embedding_client.get_embedding(query)
+                if q_emb:
+                    result_edges, result_nodes, facts = self._mg_vector_search(graph_id, q_emb, limit, scope)
+                    if facts:
+                        return {"facts": facts, "edges": result_edges, "nodes": result_nodes}
+            except Exception as e:
+                logger.warning(f"Erro na busca vetorial Memgraph: {e}")
 
-        # 2. Fallback DuckDB LIKE search (indexado)
+        # 2. Tentar local vector search (DuckDB + Python/NumPy)
+        if self.embedding_client:
+            try:
+                q_emb = self.embedding_client.get_embedding(query)
+                if q_emb:
+                    res = self._local_vector_search(graph_id, q_emb, limit, scope)
+                    if res and res.get("facts"):
+                        return res
+            except Exception as e:
+                logger.warning(f"Erro na busca vetorial local: {e}")
+
+        # 3. Fallback DuckDB LIKE search (indexado)
         return self._duckdb_search(graph_id, query, limit, scope)
+
+    def _local_vector_search(self, graph_id: str, query_embedding: List[float], limit: int, scope: str) -> Dict[str, Any]:
+        """Busca vetorial local em memória usando os dados do DuckDB + NumPy."""
+        import numpy as np
+        
+        def cosine_similarity(v1, v2):
+            norm_v1 = np.linalg.norm(v1)
+            norm_v2 = np.linalg.norm(v2)
+            if norm_v1 == 0 or norm_v2 == 0:
+                return 0.0
+            return float(np.dot(v1, v2) / (norm_v1 * norm_v2))
+
+        conn = self._get_db(graph_id)
+        result_edges, result_nodes, facts = [], [], []
+        q_emb = np.array(query_embedding)
+
+        # 1. Buscar Arestas
+        if scope in ("edges", "both"):
+            try:
+                rows = conn.execute("""
+                    SELECT uuid, source_node_uuid, target_node_uuid, name, fact, attributes, created_at
+                    FROM edges WHERE graph_id = ?
+                """, [graph_id]).fetchall()
+                
+                scored_edges = []
+                for r in rows:
+                    attrs = json.loads(r[5]) if isinstance(r[5], str) else (r[5] or {})
+                    emb = attrs.get("embedding")
+                    if emb and len(emb) == len(query_embedding):
+                        sim = cosine_similarity(q_emb, np.array(emb))
+                        scored_edges.append((sim, r, attrs))
+                
+                scored_edges.sort(key=lambda x: x[0], reverse=True)
+                for sim, r, attrs in scored_edges[:limit]:
+                    attrs_clean = dict(attrs)
+                    attrs_clean.pop("embedding", None)
+                    edge = {
+                        "uuid": r[0], "graph_id": graph_id,
+                        "source_node_uuid": r[1], "target_node_uuid": r[2],
+                        "name": r[3] or "", "fact": r[4] or "",
+                        "attributes": attrs_clean,
+                        "created_at": str(r[6]) if r[6] else None,
+                        "similarity": sim
+                    }
+                    result_edges.append(edge)
+                    if edge.get("fact"):
+                        facts.append(edge["fact"])
+            except Exception as e:
+                logger.error(f"Erro na busca vetorial local de arestas: {e}")
+
+        # 2. Buscar Nodos
+        if scope in ("nodes", "both"):
+            try:
+                rows = conn.execute("""
+                    SELECT uuid, name, labels, summary, attributes, created_at
+                    FROM nodes WHERE graph_id = ?
+                """, [graph_id]).fetchall()
+                
+                scored_nodes = []
+                for r in rows:
+                    attrs = json.loads(r[4]) if isinstance(r[4], str) else (r[4] or {})
+                    emb = attrs.get("embedding")
+                    if emb and len(emb) == len(query_embedding):
+                        sim = cosine_similarity(q_emb, np.array(emb))
+                        scored_nodes.append((sim, r, attrs))
+                        
+                scored_nodes.sort(key=lambda x: x[0], reverse=True)
+                for sim, r, attrs in scored_nodes[:limit]:
+                    attrs_clean = dict(attrs)
+                    attrs_clean.pop("embedding", None)
+                    node = {
+                        "uuid": r[0], "name": r[1],
+                        "labels": r[2] if r[2] else ["Entity"],
+                        "summary": r[3] or "",
+                        "attributes": attrs_clean,
+                        "created_at": str(r[5]) if r[5] else None,
+                        "similarity": sim
+                    }
+                    result_nodes.append(node)
+                    if node.get("summary"):
+                        facts.append(f"[{node['name']}]: {node['summary']}")
+            except Exception as e:
+                logger.error(f"Erro na busca vetorial local de nodos: {e}")
+
+        return {"facts": facts, "edges": result_edges, "nodes": result_nodes}
 
     def _mg_vector_search(self, graph_id: str, query_embedding: List[float], limit: int, scope: str) -> tuple:
         result_edges, result_nodes, facts = [], [], []

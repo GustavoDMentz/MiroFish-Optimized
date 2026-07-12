@@ -101,3 +101,53 @@ class LLMClient:
         except json.JSONDecodeError:
             raise ValueError(f"LLM返回的JSON格式无效: {cleaned_response}")
 
+
+class EmbeddingClient:
+    """Embedding Client utilizando o endpoint OpenAI compatible (suporta Google Gemini e outros)"""
+    
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        model: Optional[str] = None
+    ):
+        self.api_key = api_key or Config.EMBEDDING_API_KEY
+        self.base_url = base_url or Config.EMBEDDING_BASE_URL
+        self.model = model or Config.EMBEDDING_MODEL_NAME
+        
+        if not self.api_key:
+            raise ValueError("EMBEDDING_API_KEY não configurada")
+            
+        self.client = OpenAI(
+            api_key=self.api_key,
+            base_url=self.base_url
+        )
+        
+    def get_embedding(self, text: str) -> List[float]:
+        """Obtém a representação vetorial (embedding) do texto"""
+        if not text:
+            return []
+        
+        # Limpa quebras de linha para evitar falhas em certos provedores de embedding
+        cleaned_text = text.replace("\n", " ")
+        
+        response = self.client.embeddings.create(
+            input=[cleaned_text],
+            model=self.model
+        )
+        return response.data[0].embedding
+
+    def get_embeddings_batch(self, texts: List[str]) -> List[List[float]]:
+        """Obtém embeddings em lote de forma otimizada"""
+        if not texts:
+            return []
+            
+        cleaned_texts = [t.replace("\n", " ") for t in texts]
+        
+        response = self.client.embeddings.create(
+            input=cleaned_texts,
+            model=self.model
+        )
+        return [item.embedding for item in response.data]
+
+
