@@ -19,6 +19,13 @@
 
 ## Português
 
+### Segurança no uso local
+
+Por padrão, o backend desativa o debug do Flask, escuta em `127.0.0.1` ao ser iniciado diretamente e permite CORS apenas para origens locais configuradas em `CORS_ORIGINS`. Corpos JSON das requisições não são registrados nos logs. A chave de sessão Flask é aleatória a cada processo quando `SECRET_KEY` não está definida; para manter sessões entre reinícios, configure uma chave forte e privada no `.env`.
+
+O `docker-compose.yml` vincula as portas ao loopback do **host** (`127.0.0.1`). Isso não equivale a autenticação: não exponha o serviço diretamente à internet. **Atenção:** o Compose atual utiliza a imagem externa `ghcr.io/666ghj/mirofish:latest`; mudanças no código Python deste fork não alteram essa imagem. Para aplicar o endurecimento do backend, execute o código deste repositório ou construa uma imagem própria. A imagem externa também pode exigir configurações próprias.
+
+
 > **Aviso de atribuição:** Este repositório é um fork aprimorado do projeto original **[666ghj/MiroFish](https://github.com/666ghj/MiroFish)**, desenvolvido pela equipe Shanda Group. Todo o crédito pela arquitetura e ideia original pertence aos autores do projeto base. As modificações aqui presentes visam expandir sua capacidade e acessibilidade.
 
 ### ⚡ O que é o MiroFish?
